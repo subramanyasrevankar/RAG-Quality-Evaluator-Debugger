@@ -64,28 +64,8 @@ This tool gives you per-step scores and tells you **exactly what to fix.**
 
 ---
 
-## Architecture
-User Query
-│
-▼
-┌─────────────────────────────────────┐
-│           FastAPI Backend            │
-│                                     │
-│  1. Check Redis exact cache         │
-│  2. Check semantic similarity cache │
-│  3. Retrieve chunks from ChromaDB   │
-│  4. Score retrieval relevance       │
-│  5. Generate answer (Gemini API)    │
-│  6. Score faithfulness (local)      │
-│  7. Score utilization (local)       │
-│  8. LLM-as-judge faithfulness check │
-│  9. Combine scores (40/40/20)       │
-│  10. Auto-debug + suggest fixes     │
-│  11. Save to PostgreSQL             │
-│  12. Cache result in Redis          │
-└─────────────────────────────────────┘
-│
-▼
+<img width="1440" height="1640" alt="image" src="https://github.com/user-attachments/assets/d28ba84b-3423-442c-b5f9-c115264dc0ea" />
+
 
 ## API Endpoints
 
