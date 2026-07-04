@@ -65,3 +65,157 @@ This tool gives you per-step scores and tells you **exactly what to fix.**
 ---
 
 ## Architecture
+User Query
+│
+▼
+┌─────────────────────────────────────┐
+│           FastAPI Backend            │
+│                                     │
+│  1. Check Redis exact cache         │
+│  2. Check semantic similarity cache │
+│  3. Retrieve chunks from ChromaDB   │
+│  4. Score retrieval relevance       │
+│  5. Generate answer (Gemini API)    │
+│  6. Score faithfulness (local)      │
+│  7. Score utilization (local)       │
+│  8. LLM-as-judge faithfulness check │
+│  9. Combine scores (40/40/20)       │
+│  10. Auto-debug + suggest fixes     │
+│  11. Save to PostgreSQL             │
+│  12. Cache result in Redis          │
+└─────────────────────────────────────┘
+│
+▼
+React Dashboard (scores, trends, history)
+
+---
+
+## Project Structure
+RAG-Quality-Evaluator/
+│
+├── backend/
+│   ├── main.py           # FastAPI app + all endpoints
+│   ├── chunker.py        # Document chunking with overlap
+│   ├── retriever.py      # ChromaDB vector store operations
+│   ├── evaluator.py      # Retrieval relevance scorer
+│   ├── llm.py            # Gemini API integration
+│   ├── faithfulness.py   # Faithfulness + utilization scorer
+│   ├── database.py       # PostgreSQL models + operations
+│   ├── cache.py          # Redis exact match cache
+│   ├── semantic_cache.py # Semantic similarity cache
+│   ├── templates.py      # Domain-specific templates
+│   ├── debugger.py       # Auto-debug engine
+│   └── exporter.py       # CSV export
+│
+├── frontend/
+│   └── src/
+│       ├── App.jsx
+│       ├── api.js
+│       └── components/
+│           ├── Upload.jsx
+│           ├── Query.jsx
+│           ├── Dashboard.jsx
+│           └── History.jsx
+│
+├── run.py                # App entry point
+├── requirements.txt
+└── .env.example
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/upload` | Upload and chunk a document |
+| `POST` | `/query` | Ask a question + get full evaluation |
+| `GET` | `/history` | Get past evaluation runs |
+| `GET` | `/stats` | Get average scores |
+| `GET` | `/templates` | Get domain templates |
+| `GET` | `/export/csv` | Download evaluation history |
+| `GET` | `/cache/stats` | Redis cache statistics |
+| `DELETE` | `/cache/clear` | Clear all caches |
+
+---
+
+## Setup
+
+### Prerequisites
+- Python 3.11+
+- PostgreSQL
+- Node.js 18+
+
+### Backend
+
+```bash
+# Clone the repo
+git clone https://github.com/subramanyasrevankar/RAG-Quality-Evaluator-Debugger.git
+cd RAG-Quality-Evaluator-Debugger
+
+# Create virtual environment
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+source .venv/bin/activate  # Mac/Linux
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your credentials
+
+# Create PostgreSQL database
+# In pgAdmin or psql: CREATE DATABASE rag_evaluator;
+
+# Run the backend
+python run.py
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Environment Variables
+DATABASE_URL=postgresql://postgres:password@localhost:5432/rag_evaluator
+GEMINI_API_KEY=your_gemini_key_here
+UPSTASH_REDIS_REST_URL=your_upstash_url
+UPSTASH_REDIS_REST_TOKEN=your_upstash_token
+
+---
+
+## Phase-wise Development
+
+| Phase | What was built |
+|---|---|
+| **Phase 1** | Core RAG pipeline — chunking, ChromaDB, retrieval relevance scorer |
+| **Phase 2** | Gemini integration — answer generation, faithfulness + utilization scoring |
+| **Phase 3** | React dashboard — Upload, Query, Analytics, History components |
+| **Phase 4** | Redis caching — exact match + semantic similarity cache |
+| **Phase 5** | Templates, auto-debugger, CSV export, UI improvements |
+
+---
+
+## Key Design Decisions
+
+**Why cosine similarity for retrieval scoring?**
+Cosine similarity measures the angle between embedding vectors — two chunks can be far apart in space but semantically similar. It's more reliable than dot product for normalized embeddings.
+
+**Why 40/40/20 metric weights?**
+Retrieval and faithfulness are the two biggest RAG failure modes — wrong chunks and hallucination. Utilization at 20% is a secondary signal. These weights reflect production RAG evaluation frameworks like RAGAS.
+
+**Why LLM-as-judge for faithfulness?**
+Local cosine similarity gives a fast baseline score. The Gemini judge call adds semantic understanding — it can detect subtle hallucinations that embedding similarity misses. Blending both (50/50) gives a more robust signal.
+
+**Why Redis semantic caching?**
+Exact match cache handles identical questions. Semantic cache handles near-duplicates like "What is ML?" vs "Explain machine learning" — saves API calls without compromising accuracy.
+
+---
+
+## Author
+
+**Subramanya Srevankar**
+- GitHub: [@subramanyasrevankar](https://github.com/subramanyasrevankar)
