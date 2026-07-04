@@ -86,47 +86,6 @@ User Query
 └─────────────────────────────────────┘
 │
 ▼
-React Dashboard (scores, trends, history)
-
----
-RAG-Quality-Evaluator/
-│
-├── run.py                          # App entry point
-├── requirements.txt                # Python dependencies
-├── .env                            # Environment variables (not pushed)
-├── .env.example                    # Template for env variables
-├── .gitignore                      # Git ignore rules
-├── README.md                       # Project documentation
-│
-├── backend/
-│   ├── __init__.py                 # Makes backend a Python package
-│   ├── main.py                     # FastAPI app + all endpoints
-│   ├── chunker.py                  # Document chunking with overlap
-│   ├── retriever.py                # ChromaDB vector store operations
-│   ├── evaluator.py                # Retrieval relevance scorer
-│   ├── llm.py                      # Gemini API + LLM-as-judge
-│   ├── faithfulness.py             # Faithfulness + utilization scorer
-│   ├── database.py                 # PostgreSQL models + operations
-│   ├── cache.py                    # Redis exact match cache
-│   ├── semantic_cache.py           # Semantic similarity cache
-│   ├── templates.py                # Domain-specific templates
-│   ├── debugger.py                 # Auto-debug engine
-│   └── exporter.py                 # CSV export
-│
-├── frontend/
-│   ├── index.html
-│   ├── package.json
-│   ├── vite.config.js
-│   └── src/
-│       ├── App.jsx                 # Main app + tab navigation
-│       ├── api.js                  # All API calls to FastAPI
-│       └── components/
-│           ├── Upload.jsx          # Document upload component
-│           ├── Query.jsx           # Question + evaluation display
-│           ├── Dashboard.jsx       # Charts + stats + CSV export
-│           └── History.jsx         # Past queries table
-│
-└── chroma_db/                      # Local vector store (not pushed)
 
 ## API Endpoints
 
